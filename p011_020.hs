@@ -81,8 +81,26 @@ p015 k = (fac n) `div` ((fac k) * fac (n - k))
 p016 = sum . map digitToInt . show . (2^)
 
 
--- TBD
-p017 = undefined
+-- Not much interesting stuff going on here.
+p017 = sum . map (length . go) . enumFromTo 1
+  where
+    go i
+        |i < 20    = a!!i
+        |i < 100   = b!!(i `div` 10) ++ if i `mod` 10 > 0
+                                        then go (i `mod` 10)
+                                        else ""
+        |i < 1000  = a!!(i `div` 100) ++ "hundred" ++ if i `mod` 100 > 0
+                                                      then "and" ++ go (i `mod` 100)
+                                                      else ""
+        |i == 1000 = "onethousand"
+        |otherwise = error "Not implemented."
+      where
+        a = ["", "one", "two", "three", "four", "five",
+             "six", "seven", "eight", "nine", "ten",
+             "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+             "sixteen", "seventeen", "eighteen", "nineteen"]
+        b = ["", "", "twenty", "thirty", "forty", "fifty",
+             "sixty", "seventy", "eighty", "ninety"]
 
 
 -- Dynamic Programming FTW!
@@ -231,7 +249,7 @@ main = do
     print $ "Problem 014: " -- ++ show (p014 1_000_000)
     print $ "Problem 015: " ++ show (p015 20)
     print $ "Problem 016: " ++ show (p016 1000)
-    print $ "Problem 017: TBD"
+    print $ "Problem 017: " ++ show (p017 1000)
     print $ "Problem 018: " ++ show (p018 [[75], 
                                            [95, 64],
                                            [17, 47, 82],
