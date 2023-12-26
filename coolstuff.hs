@@ -1,3 +1,7 @@
+-- The fastest native Fibonacci memoisation I know.
+fib = 1 : 2 : zipWith (+) fib (tail fib)
+
+
 -- A simple prime sieve. Rather inefficient.
 primes = sieve [2..]
   where
