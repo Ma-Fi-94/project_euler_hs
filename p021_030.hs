@@ -2,7 +2,7 @@
 
 import Control.Arrow ((>>>))
 import Data.Char (ord)
-import Data.List (sort)
+import Data.List (sort, (\\))
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Utils (tok)
@@ -34,8 +34,18 @@ p023 = sum . filter (isNotSum) $ [1..28123]
     d i        = sum . filter ((i `mod`) >>> (==0)) $ [1..i `div` 2]
 
 
--- TBD
-p024 = undefined
+-- Neat recursive solution to avoid brute force :).
+p024' i = go "0123456789" (i - 1)
+  where
+    fac      = foldl1 (*) . enumFromTo 1
+    go [c] _ = [c]
+    go cs  i = c' : go cs' i'
+      where
+        f   = fac $ (length cs - 1)   -- There are f blocks,
+        idx = i `div` f               -- and we are in the idx-th one.
+        c'  = cs !! idx               -- Thus, the idx-th char is the next one.
+        cs' = cs \\ [c']              -- And these are the remaining ones.
+        i'  = i - f * idx             -- Updated index for the next round.
 
 
 -- Using the fastest native memoised version of fib I know.
@@ -71,9 +81,9 @@ main = do
 
     -- print $ "Problem 021: " ++ show (p021 10_000)
     -- print $ "Problem 022: " ++ show (p022 input022)
+    -- print $ "Problem 023: " ++ show p023
+    print $ "Problem 024: " ++ (p024' 1_000_000)
 
-    print $ "Problem 023: " ++ show p023
-
-    print $ "Problem 025: " ++ show (p025 1000)
+    --print $ "Problem 025: " ++ show (p025 1000)
 
     print $ "---------- Done. ----------"
