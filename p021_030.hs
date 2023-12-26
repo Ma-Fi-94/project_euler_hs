@@ -1,7 +1,7 @@
 {-# LANGUAGE NumericUnderscores #-}
 
 import Control.Arrow ((>>>))
-import Data.Char (ord)
+import Data.Char (ord, digitToInt)
 import Data.List (sort, (\\))
 import Data.Set (Set)
 import qualified Data.Set as Set
@@ -63,16 +63,37 @@ p026 = undefined
 p027 = undefined
 
 
--- TBD
-p028 = undefined
+-- Generating ever circular layer and picking the diagonal numbers.
+-- Runs basically instantly, so further optimisation is not required.
+-- Alternatively, we could also come up with closed-form solutions
+-- for the diagonal elements.
+p028 n
+  |n < 3  = error "Not implemented."
+  |even n = error "Not meaningful."
+  |otherwise = (+1) . sum . concatMap layer $ [3,5..n]
+  where
+    layer i = map (numbers!!) $ [counts `div` 4 - 1,
+                                 counts `div` 2 - 1 ,
+                                 3 * counts `div` 4 - 1,
+                                 counts - 1]
+      where
+        numbers = [((i - 2) ^ 2 + 1)..i^2]
+        counts  = length numbers
 
 
--- TBD
-p029 = undefined
+-- Simple enumeration with removal of duplicates via set.
+-- Runs basically instantly, so good enough :).
+p029 i = Set.size $ Set.fromList [a^b | a <- [2..i], b <- [2..i]] 
 
 
--- TBD
-p030 = undefined
+-- We don't care about trivial sums, i.e. we want at least 2 digits,
+-- thus we begin with 10^1.
+-- Since 7 x 9^5 = 413'343 < 10^7, we do not have to consider any
+-- number with seven digits or more. Thus, we use 10^6 as upper bound.
+-- The rest is just an exhaustive check.
+p030 = sum . filter fulfils $ [10..1_000_000]
+  where
+    fulfils i = i == (sum $ map ((^5) . digitToInt) $ show i)
 
 
 main = do
@@ -82,8 +103,12 @@ main = do
     -- print $ "Problem 021: " ++ show (p021 10_000)
     -- print $ "Problem 022: " ++ show (p022 input022)
     -- print $ "Problem 023: " ++ show p023
-    print $ "Problem 024: " ++ (p024' 1_000_000)
+    -- print $ "Problem 024: " ++ (p024' 1_000_000)
+    -- print $ "Problem 025: " ++ show (p025 1000)
+    
 
-    --print $ "Problem 025: " ++ show (p025 1000)
+    -- print $ "Problem 028: " ++ show (p028 1001)
+    -- print $ "Problem 029: " ++ show (p029 100)
+    -- print $ "Problem 030: " ++ show p030
 
     print $ "---------- Done. ----------"
