@@ -81,7 +81,7 @@ p015 k = (fac n) `div` ((fac k) * fac (n - k))
 p016 = sum . map digitToInt . show . (2^)
 
 
--- Not much interesting stuff going on here.
+-- Not much interesting stuff
 p017 = sum . map (length . go) . enumFromTo 1
   where
     go i
@@ -115,13 +115,23 @@ p018 (l1:l2:ls) = p018 (l':ls)
              $ zipWith (max) l1 (tail l1)
 
 
+-- We just count the overall days since 1st Jan 1900 and apply
+-- mod 7. Then, we only have to count the zeros and are done.
+p019 y1 y2 = length . filter (==0) . map (`mod` 7) $ absDays [y1..y2]
+  where
+    leap i       = (i `mod` 400 == 0) || (i `mod` 4 == 0 && i `mod` 100 > 0)
+    yearLength i = if leap i then 366 else 365
+    daysOfYear i = if   leap i
+                   then [1, 32, 61, 92, 122, 153, 183, 214, 245, 275, 306, 336]
+                   else [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
+    absDays []     = []
+    absDays (y:ys) = map (+offset) (daysOfYear y) ++ absDays ys
+      where
+        offset = sum $ map yearLength [1900..y-1]
+
 
 -- Direct calculation.
-p019 = sum . map digitToInt . show . foldl1 (*) . enumFromTo 1
-
-
--- TBD
-p020 = undefined
+p020 = sum . map digitToInt . show . foldl1 (*) . enumFromTo 1
 
 
 main = do
@@ -145,7 +155,7 @@ main = do
                                           [20, 69, 36, 41, 72, 30, 23, 88, 34, 62, 99, 69, 82, 67, 59, 85, 74, 04, 36, 16],
                                           [20, 73, 35, 29, 78, 31, 90, 01, 74, 31, 49, 71, 48, 86, 81, 16, 23, 57, 05, 54],
                                           [01, 70, 54, 71, 83, 51, 54, 69, 16, 92, 33, 48, 61, 43, 52, 01, 89, 19, 67, 48]])
-    print $ "Problem 012: " -- ++ show (p012 500)
+    print $ "Problem 012: " ++ show (p012 500)
     print $ "Problem 013: " ++ show (p013 [37107287533902102798797998220837590246510135740250,
                                            46376937677490009712648124896970078050417018260538,
                                            74324986199524741059474233309513058123726617309629,
@@ -246,7 +256,7 @@ main = do
                                            72107838435069186155435662884062257473692284509516,
                                            20849603980134001723930671666823555245252804609722,
                                            53503534226472524250874054075591789781264330331690])
-    print $ "Problem 014: " -- ++ show (p014 1_000_000)
+    print $ "Problem 014: " ++ show (p014 1_000_000)
     print $ "Problem 015: " ++ show (p015 20)
     print $ "Problem 016: " ++ show (p016 1000)
     print $ "Problem 017: " ++ show (p017 1000)
@@ -265,5 +275,5 @@ main = do
                                            [91, 71, 52, 38, 17, 14, 91, 43, 58, 50, 27, 29, 48],
                                            [63, 66, 04, 68, 89, 53, 67, 30, 73, 16, 69, 87, 40, 31],
                                            [04, 62, 98, 27, 23, 09, 70, 98, 73, 93, 38, 53, 60, 04, 23]])
-    print $ "Problem 019: TBD"
-    print $ "Problem 020: " ++ show (p019 100)
+    print $ "Problem 019: " ++ show (p019 1901 2000)
+    print $ "Problem 020: " ++ show (p020 100)
