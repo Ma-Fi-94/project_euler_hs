@@ -3,6 +3,8 @@
 import Control.Arrow ((>>>))
 import Data.Char (ord)
 import Data.List (sort)
+import Data.Set (Set)
+import qualified Data.Set as Set
 import Utils (tok)
 
 -- Brute-force with obvious constraints.
@@ -23,8 +25,13 @@ p022 = sum . map value . zip [1..] . sort . tok ['"', ',']
     value (i, xs) = i * (sum $ map (\c -> ord c - 64) xs)
 
 
--- TBD
-p023 = undefined
+-- Reasonably fast thanks to set lookups.
+p023 = sum . filter (isNotSum) $ [1..28123]
+  where
+    isNotSum i = any (\a -> (i - a) `Set.member` abuSet) abundants
+    abuSet     = Set.fromList abundants
+    abundants  = filter (\n -> n < d n) [1..28123]
+    d i        = sum . filter ((i `mod`) >>> (==0)) $ [1..i `div` 2]
 
 
 -- TBD
@@ -65,6 +72,7 @@ main = do
     -- print $ "Problem 021: " ++ show (p021 10_000)
     -- print $ "Problem 022: " ++ show (p022 input022)
 
+    print $ "Problem 023: " ++ show p023
 
     print $ "Problem 025: " ++ show (p025 1000)
 
