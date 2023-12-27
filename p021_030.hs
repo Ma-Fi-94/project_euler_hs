@@ -2,11 +2,12 @@
 
 import Control.Arrow ((>>>))
 import Data.Char (ord, digitToInt)
-import Data.List (sort, (\\), maximumBy)
+import Data.List (sort, (\\), maximumBy, nub)
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Ord (comparing)
 import Utils (tok)
+import Debug.Trace (trace)
 
 -- Brute-force with obvious constraints.
 -- Proper divisors via trial division -- naive,
@@ -56,8 +57,44 @@ p025 d = (+1) . length . takeWhile (< 10^(d - 1)) $ fib
     fib = 1 : 1 : zipWith (+) fib (tail fib)
 
 
--- TBD
-p026 = undefined
+-- We can distinguish three cases.
+-- First, terminating fractions 1/n = 0.abc000. In this case, there is
+-- some k > 0, such that (10^k)/n is an integer. Thus, n is a divisor
+-- of 10^k, which means that n may only have divisors 2 and 5.
+-- Second, a repeating fraction. This happens if 2 and 5 are not
+-- prime divisors of n. In this case, there exists some k > 0,
+-- such that (10^k)/n and 1/n have the same (infinite) decimal part.
+-- Thus, (10^k)/n - 1/n = (10^k - 1)/n is an integer, i.e.
+-- 10^k - 1 mod n = 0, i.e. 10^k mod n = 1. We thus only need to find
+-- the smallest k that fulfils this equation. This is the cycle length.
+-- Third, some constant part followed by a repeated parts. We treat this
+-- the same as the previous case, but first need to divide out all 2s and 5s.
+p026 x = fst
+       . maximumBy (comparing snd)
+       . zip [2..(x-1)]
+       $ map cycleLength [2..(x-1)]
+  where
+    cycleLength i
+        |primeFactors i \\ [2, 5] == []        = 0
+        |all (`notElem` primeFactors i) [2, 5] = findk i
+        |otherwise                             = findk (remove25 i)
+            where
+              findk n = (+1)
+                      . length
+                      . takeWhile ((/=1) . (`mod` n) . (10^))
+                      $ [1..]
+    
+    primeFactors = nub . go (2:[3,5..])
+      where
+        go (p:ps) n
+            |p^2 > n        = [n]
+            |n `mod` p == 0 = p : go (p:ps) (n `div` p)
+            |otherwise      = go ps n
+
+    remove25 i
+        |i `mod` 2 == 0 = remove25 (i `div` 2)
+        |i `mod` 5 == 0 = remove25 (i `div` 5)
+        |otherwise      = i
 
 
 -- Exhaustive search, but we memoise the primality-checking function.
@@ -123,10 +160,9 @@ main = do
     -- print $ "Problem 023: " ++ show p023
     -- print $ "Problem 024: " ++ (p024 1_000_000)
     -- print $ "Problem 025: " ++ show (p025 1000)
-    
-    print $ "Problem 027: " ++ show (p027 999 1000)
+    print $ "Problem 026: " ++ show (p026 1000)
+    -- print $ "Problem 027: " ++ show (p027 999 1000)
     -- print $ "Problem 028: " ++ show (p028 1001)
     -- print $ "Problem 029: " ++ show (p029 100)
     -- print $ "Problem 030: " ++ show p030
-
     print $ "---------- Done. ----------"

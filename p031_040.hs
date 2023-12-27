@@ -70,6 +70,7 @@ p039 = fst
                                c^2 == a^2 + b^2]
 
 
+-- Straightfoward
 p040 = (c!!0) * (c!!9) * (c!!99) * (c!!999) * (c!!9999) * (c!!99999) * (c!!999999)
   where
     c = map digitToInt . filter (isDigit) . show $ [1..]
