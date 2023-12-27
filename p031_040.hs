@@ -1,11 +1,12 @@
 {-# LANGUAGE NumericUnderscores #-}
 
+import Data.Char (digitToInt)
+
 
 -- Just counting the number of possibilities, and looking at
 -- every coin only once (in descending order) makes this run
 -- nearly instantly. (I first tried a naive brute-force /
 -- enumerative approach without any success.)
-p031 :: Int -> Int
 p031 = go [200, 100, 50, 20, 10, 5, 2, 1]
   where
     go _ 0  = 1
@@ -15,8 +16,23 @@ p031 = go [200, 100, 50, 20, 10, 5, 2, 1]
         choices = [0..(rest `div` c)]
 
 
+-- Note that 9! = 362880, so a number with d digits can map to
+-- at most d*362880. Hence, a number with 8 digits can map to
+-- at most 2903040, which has only seven digits. Thus, we need
+-- to only explore numbers up to 10_000_000.
+-- We start our search at 10 to exclude trivial cases.
+-- Runs in less than two seconds (when compiled for speed),
+-- which is acceptable.
+p034 = sum . filter check $ [10..10_000_000]
+  where
+    check i = (==i) . sum . map (fac . digitToInt) . show $ i
+    fac 0   = 1
+    fac i   = foldl1 (*) [1..i]
+
 
 main = do
-    print $ "Problem 031: " ++ show (p031 200)
+    -- print $ "Problem 031: " ++ show (p031 200)
 
+    -- print $ "Problem 034: " ++ show p034
+    
     print $ "---------- Done. ----------"
