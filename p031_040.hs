@@ -1,6 +1,6 @@
 {-# LANGUAGE NumericUnderscores #-}
 
-import Data.Char (digitToInt)
+import Data.Char (digitToInt, isDigit)
 import Data.List (maximumBy)
 import Data.Ord (comparing)
 
@@ -64,10 +64,16 @@ p039 = fst
      . map (length . triangles)
      . enumFromTo 1 
   where
-    triangles p = trace (show p) [(a, b, c) | a <- [1..(p - 2)],
+    triangles p = [(a, b, c) | a <- [1..(p - 2)],
                                b <- [1..(p - a - 1)],
                                let c = p - a - b,
                                c^2 == a^2 + b^2]
+
+
+p040 = (c!!0) * (c!!9) * (c!!99) * (c!!999) * (c!!9999) * (c!!99999) * (c!!999999)
+  where
+    c = map digitToInt . filter (isDigit) . show $ [1..]
+
 
 main = do
     -- print $ "Problem 031: " ++ show (p031 200)
@@ -76,5 +82,7 @@ main = do
     -- print $ "Problem 035: " ++ show (p035 1_000_000)
 
     -- print $ "Problem 039: " ++ show (p039 1000)
+
+    print $ "Problem 040: " ++ show p040
     
     print $ "---------- Done. ----------"
