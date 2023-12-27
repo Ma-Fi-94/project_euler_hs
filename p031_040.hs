@@ -1,7 +1,8 @@
 {-# LANGUAGE NumericUnderscores #-}
 
 import Data.Char (digitToInt)
-
+import Data.List (maximumBy)
+import Data.Ord (comparing)
 
 -- Just counting the number of possibilities, and looking at
 -- every coin only once (in descending order) makes this run
@@ -47,7 +48,6 @@ p035 i
       where
         isqrt = truncate . sqrt . fromIntegral
 
-    rots :: Int -> [Int]
     rots n = go len dblstr
       where
         len      = length . show $ n 
@@ -56,10 +56,25 @@ p035 i
         go c str = (read (take len str)) : go (c - 1) (tail str)
 
 
+-- Bruteforce with constraints. Takes a bit of time,
+-- so there's some more room for optimisation, I think.
+p039 = fst
+     . maximumBy (comparing snd)
+     . zip ([1..])
+     . map (length . triangles)
+     . enumFromTo 1 
+  where
+    triangles p = trace (show p) [(a, b, c) | a <- [1..(p - 2)],
+                               b <- [1..(p - a - 1)],
+                               let c = p - a - b,
+                               c^2 == a^2 + b^2]
+
 main = do
     -- print $ "Problem 031: " ++ show (p031 200)
 
     -- print $ "Problem 034: " ++ show p034
-    print $ "Problem 035: " ++ show (p035 1_000_000)
+    -- print $ "Problem 035: " ++ show (p035 1_000_000)
+
+    -- print $ "Problem 039: " ++ show (p039 1000)
     
     print $ "---------- Done. ----------"
