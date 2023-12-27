@@ -2,9 +2,10 @@
 
 import Control.Arrow ((>>>))
 import Data.Char (ord, digitToInt)
-import Data.List (sort, (\\))
+import Data.List (sort, (\\), maximumBy)
 import Data.Set (Set)
 import qualified Data.Set as Set
+import Data.Ord (comparing)
 import Utils (tok)
 
 -- Brute-force with obvious constraints.
@@ -35,7 +36,7 @@ p023 = sum . filter (isNotSum) $ [1..28123]
 
 
 -- Neat recursive solution to avoid brute force :).
-p024' i = go "0123456789" (i - 1)
+p024 i = go "0123456789" (i - 1)
   where
     fac      = foldl1 (*) . enumFromTo 1
     go [c] _ = [c]
@@ -59,8 +60,25 @@ p025 d = (+1) . length . takeWhile (< 10^(d - 1)) $ fib
 p026 = undefined
 
 
--- TBD
-p027 = undefined
+-- Exhaustive search, but we memoise the primality-checking function.
+-- This makes it run reasonably fast (~10s).
+p027 :: Int -> Int -> Int
+p027 limA limB = uncurry (*)
+     . fst
+     . maximumBy (comparing snd)
+     . zip searchSpace 
+     $ map nbPrimes searchSpace
+  where
+    searchSpace     = [(a, b) | a <- [-limA..limA], b <- [-limB..limB]]
+    nbPrimes (a, b) = length . takeWhile isPrime . map (f (a,b)) $ [0..]
+    f (a, b) n      = n^2 + a * n + b 
+    isPrime i
+        |i < 0     = False
+        |otherwise = primality !! i 
+          where
+            primality   = False : False : True : (map check [3..])
+            check x     = all ((>0) . (x `rem`)) [2..isqrt x]
+            isqrt       = truncate . sqrt . fromIntegral
 
 
 -- Generating ever circular layer and picking the diagonal numbers.
@@ -83,7 +101,7 @@ p028 n
 
 -- Simple enumeration with removal of duplicates via set.
 -- Runs basically instantly, so good enough :).
-p029 i = Set.size $ Set.fromList [a^b | a <- [2..i], b <- [2..i]] 
+p029 i = Set.size $ Set.fromList [a ^ b | a <- [2..i], b <- [2..i]] 
 
 
 -- We don't care about trivial sums, i.e. we want at least 2 digits,
@@ -103,10 +121,10 @@ main = do
     -- print $ "Problem 021: " ++ show (p021 10_000)
     -- print $ "Problem 022: " ++ show (p022 input022)
     -- print $ "Problem 023: " ++ show p023
-    -- print $ "Problem 024: " ++ (p024' 1_000_000)
+    -- print $ "Problem 024: " ++ (p024 1_000_000)
     -- print $ "Problem 025: " ++ show (p025 1000)
     
-
+    print $ "Problem 027: " ++ show (p027 999 1000)
     -- print $ "Problem 028: " ++ show (p028 1001)
     -- print $ "Problem 029: " ++ show (p029 100)
     -- print $ "Problem 030: " ++ show p030
