@@ -14,6 +14,7 @@ The first 100 Project Euler problems, solved in Haskell! (Beyond that, sharing o
 |021|✅|022|✅|023|✅|024|✅|025|✅|
 |026| |027|✅|028|✅|029|✅|030|✅|
 |031|✅|032| |033| |034|✅|035|✅|
+|036| |037| |038| |039|✅|040| |
 
 
 
