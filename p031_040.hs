@@ -1,8 +1,10 @@
 {-# LANGUAGE NumericUnderscores #-}
 
 import Data.Char (digitToInt, isDigit)
-import Data.List (maximumBy)
+import Data.List (maximumBy, intersect, (\\))
+import Data.Maybe
 import Data.Ord (comparing)
+import Data.Ratio
 
 -- Just counting the number of possibilities, and looking at
 -- every coin only once (in descending order) makes this run
@@ -16,6 +18,27 @@ p031 = go [200, 100, 50, 20, 10, 5, 2, 1]
       where
         choices = [0..(rest `div` c)]
 
+
+-- Exhaustive search with some constraints, runs instantly.
+p033 = denominator
+     . product
+     . map (\(n, d) -> n % d) 
+     . filter test
+     $ candidates
+  where
+    candidates      = [(n, d) | n <- [10..99],
+                                d <- [10..99],
+                                n < d,
+                                isJust (sharedDigit n d)]
+    sharedDigit i j = if   length ((show i) `intersect` (show j)) == 1
+                      then Just . head $ (show i) `intersect` (show j)
+                      else Nothing
+    test (i, j)     = (j' /= 0) && (i % j == i' % j') && (not trivial)
+      where
+        i'      = read . (\\[fromJust (sharedDigit i j)]) $ show i
+        j'      = read . (\\[fromJust (sharedDigit i j)]) $ show j
+        trivial = i `rem` 10 == 0 && j `rem` 10 == 0 
+    
 
 -- Note that 9! = 362880, so a number with d digits can map to
 -- at most d*362880. Hence, a number with 8 digits can map to
@@ -78,12 +101,12 @@ p040 = (c!!0) * (c!!9) * (c!!99) * (c!!999) * (c!!9999) * (c!!99999) * (c!!99999
 
 main = do
     -- print $ "Problem 031: " ++ show (p031 200)
-
+    -- print $ "Problem 033: " ++ show p033
     -- print $ "Problem 034: " ++ show p034
     -- print $ "Problem 035: " ++ show (p035 1_000_000)
 
     -- print $ "Problem 039: " ++ show (p039 1000)
 
-    print $ "Problem 040: " ++ show p040
+    -- print $ "Problem 040: " ++ show p040
     
     print $ "---------- Done. ----------"
