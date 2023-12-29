@@ -1,7 +1,7 @@
 {-# LANGUAGE NumericUnderscores #-}
 
 import Data.Char (digitToInt, isDigit)
-import Data.List (maximumBy, intersect, (\\))
+import Data.List ((\\), intersect, maximumBy, nub, sort)
 import Data.Maybe
 import Data.Ord (comparing)
 import Data.Ratio
@@ -17,6 +17,20 @@ p031 = go [200, 100, 50, 20, 10, 5, 2, 1]
     go (c:cs) rest = sum $ map (\i -> go cs (rest - i * c)) choices
       where
         choices = [0..(rest `div` c)]
+
+
+-- Bruteforce with some constraints to limit the search space.
+p032 = sum . nub $ [c | a <- [1..2_000],
+                        b <- [1..2_000],
+                        a < b,
+                        let c = a * b,
+                        null $ (show a) `intersect` (show b),
+                        null $ (show a) `intersect` (show c),
+                        null $ (show b) `intersect` (show c),                        
+                        pan9 (show a ++ show b ++ show c)]
+  where
+    pan9 :: String -> Bool
+    pan9 = (=="123456789") . sort
 
 
 -- Exhaustive search with some constraints, runs instantly.
@@ -101,6 +115,7 @@ p040 = (c!!0) * (c!!9) * (c!!99) * (c!!999) * (c!!9999) * (c!!99999) * (c!!99999
 
 main = do
     -- print $ "Problem 031: " ++ show (p031 200)
+    print $ "Problem 032: " ++ show (p032)
     -- print $ "Problem 033: " ++ show p033
     -- print $ "Problem 034: " ++ show p034
     -- print $ "Problem 035: " ++ show (p035 1_000_000)
