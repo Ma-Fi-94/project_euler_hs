@@ -20,6 +20,7 @@ p031 = go [200, 100, 50, 20, 10, 5, 2, 1]
 
 
 -- Bruteforce with some constraints to limit the search space.
+-- Not elegant, but runs nearly instantly when compiled for speed.
 p032 = sum . nub $ [c | a <- [1..2_000],
                         b <- [1..2_000],
                         a < b,
@@ -93,6 +94,17 @@ p035 i
         go c str = (read (take len str)) : go (c - 1) (tail str)
 
 
+-- Straightforward exhaustive search. Runs nearly instantly.
+p036 n = sum . filter (pali . dec2bin) . filter (pali) $ [0..n-1]
+  where
+    pali x  = (show x) == (reverse (show x))
+    dec2bin = reverse . go
+      where
+        go :: Int -> String
+        go 0 = ""
+        go i = show (i `rem` 2) ++ go (i `div` 2)
+
+
 -- Bruteforce with constraints. Takes a bit of time,
 -- so there's some more room for optimisation, I think.
 p039 = fst
@@ -115,13 +127,13 @@ p040 = (c!!0) * (c!!9) * (c!!99) * (c!!999) * (c!!9999) * (c!!99999) * (c!!99999
 
 main = do
     -- print $ "Problem 031: " ++ show (p031 200)
-    print $ "Problem 032: " ++ show (p032)
+    -- print $ "Problem 032: " ++ show (p032)
     -- print $ "Problem 033: " ++ show p033
     -- print $ "Problem 034: " ++ show p034
     -- print $ "Problem 035: " ++ show (p035 1_000_000)
+    -- print $ "Problem 036: " ++ show (p036 1_000_000)
 
     -- print $ "Problem 039: " ++ show (p039 1000)
-
     -- print $ "Problem 040: " ++ show p040
     
     print $ "---------- Done. ----------"
