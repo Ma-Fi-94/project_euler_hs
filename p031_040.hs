@@ -1,10 +1,12 @@
 {-# LANGUAGE NumericUnderscores #-}
 
 import Data.Char (digitToInt, isDigit)
-import Data.List ((\\), intersect, maximumBy, nub, sort)
+import Data.List ((\\), intersect, maximumBy, nub, sort, tails)
 import Data.Maybe
 import Data.Ord (comparing)
 import Data.Ratio
+import Debug.Trace (trace)
+
 
 -- Just counting the number of possibilities, and looking at
 -- every coin only once (in descending order) makes this run
@@ -105,6 +107,29 @@ p036 n = sum . filter (pali . dec2bin) . filter (pali) $ [0..n-1]
         go i = show (i `rem` 2) ++ go (i `div` 2)
 
 
+-- A clever way of constructing this list makes it run nearly instantly:
+-- Because for every number d1.d2.d3..., all sublists d1, d1.d2, d1.d2.d3
+-- must be prime, we start with the 4 single-digit prime numbers and add
+-- digit after digit, retaining only prime numbers at every step. This
+-- leads to a small set of right-truncatable primes, from which we then
+-- only have to retain those primes that are also left-truncatable.
+p037 = sum
+     . filter isTruncL
+     . filter (>9)
+     $ go [2, 3, 5, 7]
+  where
+    go xs     = concat
+              . takeWhile (not . null)
+              $ iterate (concatMap step) xs
+    step   x  = filter isPrime $ map ((+10*x)) [0..9]
+    isTruncL  = all isPrime
+              . map (read :: String -> Int)
+              . tail . init . tails
+              . (show :: Int -> String)
+    isPrime i = (i > 1) && all ((>0) . (i `rem`)) [2..isqrt i]
+    isqrt     = truncate . sqrt . fromIntegral
+
+
 -- Optimised version of the previous naive approach. Reduced runtime
 -- from 5.15s to 180-190ms.
 -- The key insight here is that we have two constraints, namely that
@@ -126,7 +151,7 @@ p039 = fst
 
 
 -- Straightfoward, running instantly.
-p040 = (c!!0) * (c!!9) * (c!!99) * (c!!999) * (c!!9999) * (c!!99999) * (c!!999999)
+p040 = product . map (c!!) $ [0, 9, 99, 999, 9999, 99999, 999999]
   where
     c = map digitToInt . filter (isDigit) . show $ [1..]
 
@@ -138,8 +163,8 @@ main = do
     --print $ "Problem 034: " ++ show p034
     --print $ "Problem 035: " ++ show (p035 1_000_000)
     --print $ "Problem 036: " ++ show (p036 1_000_000)
-
-    -- print $ "Problem 039: " ++ show (p039 1000)
-    -- print $ "Problem 040: " ++ show p040
+    print $ "Problem 037: " ++ show p037
+    --print $ "Problem 039: " ++ show (p039 1000)
+    print $ "Problem 040: " ++ show p040
     
     print $ "---------- Done. ----------"
