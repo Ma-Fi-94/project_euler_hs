@@ -105,33 +105,39 @@ p036 n = sum . filter (pali . dec2bin) . filter (pali) $ [0..n-1]
         go i = show (i `rem` 2) ++ go (i `div` 2)
 
 
--- Bruteforce with constraints. Takes a bit of time,
--- so there's some more room for optimisation, I think.
+-- Optimised version of the previous naive approach. Reduced runtime
+-- from 5.15s to 180-190ms.
+-- The key insight here is that we have two constraints, namely that
+-- p = a + b + c, and c^2 = a^2 + b^2. Thus, we only have one degree
+-- of freedom: For any a we choose, b and c are exactly determined.
+-- b = (p^2/2 - ap) / (p - a)
+-- c = p - a - b.
+-- If b and c happen to be integers, the solution is valid.
 p039 = fst
-     . maximumBy (comparing snd)
-     . zip ([1..])
-     . map (length . triangles)
-     . enumFromTo 1 
+      . maximumBy (comparing snd)
+      . zip ([1..])
+      . map (length . triangles)
+      . enumFromTo 1 
   where
     triangles p = [(a, b, c) | a <- [1..(p - 2)],
-                               b <- [1..(p - a - 1)],
+                               let b = ((p^2 `div` 2) - a*p) `div` (p - a),
                                let c = p - a - b,
                                c^2 == a^2 + b^2]
 
 
--- Straightfoward
+-- Straightfoward, running instantly.
 p040 = (c!!0) * (c!!9) * (c!!99) * (c!!999) * (c!!9999) * (c!!99999) * (c!!999999)
   where
     c = map digitToInt . filter (isDigit) . show $ [1..]
 
 
 main = do
-    -- print $ "Problem 031: " ++ show (p031 200)
-    -- print $ "Problem 032: " ++ show (p032)
-    -- print $ "Problem 033: " ++ show p033
-    -- print $ "Problem 034: " ++ show p034
-    -- print $ "Problem 035: " ++ show (p035 1_000_000)
-    -- print $ "Problem 036: " ++ show (p036 1_000_000)
+    --print $ "Problem 031: " ++ show (p031 200)
+    --print $ "Problem 032: " ++ show (p032)
+    --print $ "Problem 033: " ++ show p033
+    --print $ "Problem 034: " ++ show p034
+    --print $ "Problem 035: " ++ show (p035 1_000_000)
+    --print $ "Problem 036: " ++ show (p036 1_000_000)
 
     -- print $ "Problem 039: " ++ show (p039 1000)
     -- print $ "Problem 040: " ++ show p040
