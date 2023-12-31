@@ -36,6 +36,16 @@ p043 = sum $ filter test candidates
                . map readInt
                $ permutations "0123456789"
 
+-- W.l.o.g. we assume j > k; pentagonality check as described below.
+-- This makes it run within a few seconds.
+p044 = head $ [(penta j - penta k)| j <- [2..10000],
+                                    k <- [j-1, j-2..1],
+                                    isPenta (penta j + penta k),
+                                    isPenta (penta j - penta k)]
+  where
+    penta n   = n * (3 * n - 1) `div` 2 
+    isPenta x = (1 + sqrt (24 * (fromIntegral x) + 1)) `mod'` 6 == 0
+
 
 -- For efficiency, we check triangle numbers for pentagonality
 -- and for hexagonality by checking if there's an integer solution
@@ -76,7 +86,7 @@ main = do
     --print $ "Problem 041: " ++ show (p041)
     --print $ "Problem 042: " ++ show (p042 input042)
     --print $ "Problem 043: " ++ show p043
-
+    print $ show p044
     --print $ "Problem 045: " ++ show p045
     --print $ "Problem 046: " ++ show p046
 
