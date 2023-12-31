@@ -6,6 +6,7 @@ import Data.Maybe
 import Data.Ord (comparing)
 import Data.Ratio
 import Debug.Trace (trace)
+import Utils (readInt)
 
 
 -- Just counting the number of possibilities, and looking at
@@ -121,13 +122,34 @@ p037 = sum
     go xs     = concat
               . takeWhile (not . null)
               $ iterate (concatMap step) xs
-    step   x  = filter isPrime $ map ((+10*x)) [0..9]
+    step   i  = filter isPrime $ map ((+10*i)) [0..9]
     isTruncL  = all isPrime
               . map (read :: String -> Int)
               . tail . init . tails
               . (show :: Int -> String)
     isPrime i = (i > 1) && all ((>0) . (i `rem`)) [2..isqrt i]
     isqrt     = truncate . sqrt . fromIntegral
+
+
+-- We try all allowed values of n, and adjust the range of x.
+-- We want a pan9 number, that means we want a concatenated
+-- product with exactly 9 digits. We can bound x (++*) n
+-- from above by concatenating x nine times, which allows
+-- us to bound the range of valids x. This makes the search
+-- space small and execution fast. 
+p038 = maximum [x ++* n | n <- [2..9],
+                          let (dLo, dHi) = case n of
+                                                1 -> (8,9)
+                                                2 -> (3,5)
+                                                3 -> (1,4)
+                                                4 -> (0,3)
+                                                5 -> (0,2)
+                                                _ -> (0,1),
+                          x <- [10 ^ dLo..10 ^ dHi],
+                          pan9 (x ++* n)]
+  where
+    (++*) x n = readInt . foldl1 (++) . map (show . (*x)) $ [1..n]
+    pan9      = (=="123456789") . sort . show
 
 
 -- Optimised version of the previous naive approach. Reduced runtime
@@ -163,8 +185,9 @@ main = do
     --print $ "Problem 034: " ++ show p034
     --print $ "Problem 035: " ++ show (p035 1_000_000)
     --print $ "Problem 036: " ++ show (p036 1_000_000)
-    print $ "Problem 037: " ++ show p037
+    --print $ "Problem 037: " ++ show p037
+    print $ "Problem 038: " ++ show p038
     --print $ "Problem 039: " ++ show (p039 1000)
-    print $ "Problem 040: " ++ show p040
+    --print $ "Problem 040: " ++ show p040
     
     print $ "---------- Done. ----------"
