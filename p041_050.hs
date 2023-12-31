@@ -1,8 +1,15 @@
 {-# LANGUAGE NumericUnderscores #-}
 
-
 import Data.Char (ord)
-import Utils (tok)
+import Data.List (inits, permutations, sort)
+import Utils (tok, isPrime, readInt)
+
+
+-- Exhaustive search, based on first generating all n-digit
+-- pandigital numbers for n = 1..9. Runs nearly instantly.
+p041 = head . reverse . sort . filter isPrime
+     . map readInt . foldl1 (++) . map permutations . tail . inits
+     $ "123456789"
 
 
 -- The maximum word score is 192, so we just generate the first 200
@@ -37,6 +44,7 @@ p048 = (read :: String -> Int) . reverse . take 10 . reverse . show
 main = do
     input042 <- readFile "0042_words.txt"
 
+    print $ "Problem 041: " ++ show (p041)
     print $ "Problem 042: " ++ show (p042 input042)
 
     print $ "Problem 046: " ++ show p046
