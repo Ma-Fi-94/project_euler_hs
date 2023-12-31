@@ -2,8 +2,8 @@
 
 import Data.Char (ord)
 import Data.Fixed (mod')
-import Data.List (inits, permutations, sort)
-import Utils (tok, isPrime, readInt)
+import Data.List (group, inits, intersect, nub, permutations, sort)
+import Utils (tok, isPrime, primeFactors, readInt)
 
 
 -- Exhaustive search, based on first generating all n-digit
@@ -74,7 +74,21 @@ p046 = head . dropWhile test . filter composite $ [9,11..]
                                     let p =  i - 2 * s,
                                     prime p]
 
- 
+
+-- Straightfoward direct search without any cleverness. Runs in a few seconds.
+p047 = head $ filter test [2..]
+  where
+    test n =  all ((==4) . length) factors
+           && all null [(factors !! i) `intersect` (factors !! j) | i <- [0..3],
+                                                                    j <- [0..3],
+                                                                    i < j]
+      where
+        factors = map primeFactors' [n, n + 1, n + 2, n + 3]
+        primeFactors' = map (\l -> (head l) ^ (length l))
+                      . group
+                      . primeFactors
+
+
 -- Direct calculation
 p048 = (read :: String -> Int) . reverse . take 10 . reverse . show
      . sum . map (\n -> n^n) . enumFromTo 1
@@ -86,10 +100,10 @@ main = do
     --print $ "Problem 041: " ++ show (p041)
     --print $ "Problem 042: " ++ show (p042 input042)
     --print $ "Problem 043: " ++ show p043
-    print $ show p044
+    --print $ "Problem 044: " ++ show p044
     --print $ "Problem 045: " ++ show p045
     --print $ "Problem 046: " ++ show p046
-
+    print $ show p047
     --print $ "Problem 048: " ++ show (p048 1000)
     
     print $ "---------- Done. ----------"
