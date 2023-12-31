@@ -1,6 +1,7 @@
 {-# LANGUAGE NumericUnderscores #-}
 
 import Data.Char (ord)
+import Data.Fixed (mod')
 import Data.List (inits, permutations, sort)
 import Utils (tok, isPrime, readInt)
 
@@ -36,6 +37,21 @@ p043 = sum $ filter test candidates
                $ permutations "0123456789"
 
 
+-- For efficiency, we check triangle numbers for pentagonality
+-- and for hexagonality by checking if there's an integer solution
+-- for the quadratics that generated penta- / hexagonal numbers.
+-- This makes it run basically instantly :).
+p045 :: Int
+p045 = head 
+     . filter isPenta
+     . filter isHexa
+     $ map triangle [286..]
+  where
+    triangle n = n * (n + 1) `div` 2 
+    isPenta x  = (1 + sqrt (24 * (fromIntegral x) + 1)) `mod'` 6 == 0
+    isHexa  x  = (1 + sqrt (8 * (fromIntegral x) + 1)) `mod'` 4 == 0
+
+
 -- For every odd composite, we enumerate all possible squares and
 -- check whether the required difference is prime. Runs basically
 -- instantly, so certainly good enough :).
@@ -59,8 +75,9 @@ main = do
 
     --print $ "Problem 041: " ++ show (p041)
     --print $ "Problem 042: " ++ show (p042 input042)
-    print $ "Problem 043: " ++ show p043
+    --print $ "Problem 043: " ++ show p043
 
+    --print $ "Problem 045: " ++ show p045
     --print $ "Problem 046: " ++ show p046
 
     --print $ "Problem 048: " ++ show (p048 1000)
