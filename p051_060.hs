@@ -2,8 +2,15 @@
 
 import Data.Bits (xor)
 import Data.Char (chr, ord)
-import Data.List (isInfixOf)
+import Data.List (isInfixOf, sort)
 import Utils (readInt, tok)
+
+
+-- Trivial direct search, runs close to instantly.
+p052 = head $ [x | x <- [1..],
+                   all (\i -> isPermutation x (i*x)) [2..6]]
+  where
+    isPermutation i j = (sort (show i)) == (sort (show j))
 
 
 -- Exhaustive search through the space of keys and checking for
@@ -27,6 +34,8 @@ p059 input = sum
 
 main = do
     input059 <- readFile "0059_cipher.txt"
+
+    print $ "Problem 052: " ++ show p052
 
     print $ "Problem 059: " ++ show (p059 input059)
 
