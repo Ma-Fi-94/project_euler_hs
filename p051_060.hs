@@ -1,7 +1,7 @@
 {-# LANGUAGE NumericUnderscores #-}
 
 import Data.Bits (xor)
-import Data.Char (chr, ord)
+import Data.Char (chr, digitToInt, ord)
 import Data.List (isInfixOf, sort)
 import Utils (readInt, readInteger, tok)
 
@@ -32,6 +32,13 @@ p055 = length $ filter isLychrel [1..9999]
             |otherwise = go (c + 1) (revadd i) 
 
 
+-- Exhaustive search is still very fast.
+p056 = maximum [digitSum (a ^ b) | a <- [1..99],
+                                   b <- [1..99]]
+  where
+    digitSum = sum . map digitToInt . show
+
+
 -- Exhaustive search through the space of keys and checking for
 -- the occurence of some common English words.
 p059 input = sum
@@ -55,6 +62,7 @@ main = do
     print $ "Problem 052: " ++ show p052
 
     print $ "Problem 055: " ++ show p055
+    print $ "Problem 056: " ++ show p056
 
     print $ "Problem 059: " ++ show (p059 input059)
 
