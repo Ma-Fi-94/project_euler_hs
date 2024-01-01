@@ -41,9 +41,7 @@ p059 input = sum
                       k2 <- [97..122],
                       k3 <- [97..122],
                       let plain = decode [k1, k2, k3],
-                      "the" `isInfixOf` plain,
-                      "and" `isInfixOf` plain,
-                      "then" `isInfixOf` plain]
+                      all (`isInfixOf` plain) ["the", "and", "then"]]
   where
     cipherInt  = map readInt . tok "," $ input
     decode key = map chr $ zipWith xor cipherInt repeatedKey
