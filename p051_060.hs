@@ -3,6 +3,7 @@
 import Data.Bits (xor)
 import Data.Char (chr, digitToInt, ord)
 import Data.List (isInfixOf, sort)
+import Data.Ratio
 import Utils (isPrime, readInt, readInteger, tok)
 
 
@@ -46,6 +47,31 @@ p056 i = maximum [digitSum (a ^ b) | a <- [1..i],
                                      b <- [1..i]]
   where
     digitSum = sum . map digitToInt . show
+
+
+-- Direct search. Reasonably fast.
+p058 = (+2) 
+     . fst
+     . last
+     . takeWhile (\(i, f) -> f > 1 % 10)
+     . drop 1 
+     . zip [1,3..]
+     . map (\(p, l) -> p % l)
+     . scanl1 (\(p1, l1) (p2, l2) -> (p1 + p2, l1 + l2))
+     . map (\xs -> (primeCount xs, length xs))
+     $ map (diagsLayer) [1,3..]
+  where
+    primeCount xs = length $ filter isPrime xs
+
+    diagsLayer 1 = [1]
+    diagsLayer n
+        |even n    = error "Not meaningful."
+        |otherwise = map (l!!) [length l `div` 4 - 1,
+                                length l `div` 2 - 1,
+                                3 * length l `div` 4 - 1,
+                                length l - 1]
+          where
+            l = [(n - 2) ^ 2 + 1 .. n ^ 2]
 
 
 -- Exhaustive search through the space of keys and checking for
@@ -97,6 +123,7 @@ main = do
     print $ "Problem 055: " ++ show p055
     print $ "Problem 056: " ++ show (p056 99)
 
+    print $ "Problem 058: " ++ show p058
     print $ "Problem 059: " ++ show (p059 input059)
     print $ "Problem 060: " ++ show p060
 
