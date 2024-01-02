@@ -72,35 +72,20 @@ p059 input = sum
 -- more elegant version (where we generate all distinct pairs
 -- of elements of ps and check whether they all concatenate to
 -- a prime number) would not stop within approx. 10 minutes.
-p060 = head $ [sum ps | p1 <- primes,
-                        p2 <- filter (>p1) primes,
-                        isPrime $ conc (p1, p2),
-                        isPrime $ conc (p2, p1),
-                        p3 <- filter (>p2) primes,
-                        isPrime $ conc (p1, p3),
-                        isPrime $ conc (p3, p1),
-                        isPrime $ conc (p2, p3),
-                        isPrime $ conc (p3, p2),
-                        p4 <- filter (>p3) primes,
-                        isPrime $ conc (p1, p4),
-                        isPrime $ conc (p4, p1),
-                        isPrime $ conc (p2, p4),
-                        isPrime $ conc (p4, p2),
-                        isPrime $ conc (p3, p4),
-                        isPrime $ conc (p4, p3),
-                        p5 <- filter (>p4) primes,
-                        isPrime $ conc (p1, p5),
-                        isPrime $ conc (p5, p1),
-                        isPrime $ conc (p2, p5),
-                        isPrime $ conc (p5, p2),
-                        isPrime $ conc (p3, p5),
-                        isPrime $ conc (p5, p3),
-                        isPrime $ conc (p4, p5),
-                        isPrime $ conc (p5, p4),
-                        let ps = [p1, p2, p3, p4, p5]]
+p060 = head $ [sump | p1 <- primes,
+                      p2 <- filter (>p1) primes,
+                      test p1 p2,
+                      p3 <- filter (>p2) primes,
+                      test p1 p3, test p2 p3,
+                      p4 <- filter (>p3) primes,
+                      test p1 p4, test p2 p4, test p3 p4,
+                      p5 <- filter (>p4) primes,
+                      test p1 p5, test p2 p5, test p3 p5, test p4 p5,
+                      let sump = p1 + p2 + p3 + p4 + p5]
   where
-    conc (i, j)  = readInt $ (show i) ++ (show j)
-    primes       = filter isPrime [2..10000]
+    test i j = isPrime (conc i j) && isPrime (conc j i)
+    conc i j = readInt $ (show i) ++ (show j)
+    primes   = filter isPrime [2..10000]
 
 
 main = do
