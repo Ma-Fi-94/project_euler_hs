@@ -3,7 +3,7 @@
 import Data.Bits (xor)
 import Data.Char (chr, digitToInt, ord)
 import Data.List (isInfixOf, sort)
-import Utils (readInt, readInteger, tok)
+import Utils (isPrime, readInt, readInteger, tok)
 
 
 -- Trivial direct search, runs close to instantly.
@@ -65,6 +65,44 @@ p059 input = sum
         repeatedKey = concat . repeat $ key
 
 
+-- W.l.o.g. we assume p1 < p2 < p3 < p4 < p5. The following code
+-- may seem utterly ugly, however the style is deliberate to
+-- provide lots of opportunities for "early stopping". This
+-- approach finishes in approximately one second, whereas a
+-- more elegant version (where we generate all distinct pairs
+-- of elements of ps and check whether they all concatenate to
+-- a prime number) would not stop within approx. 10 minutes.
+p060 = head $ [sum ps | p1 <- primes,
+                        p2 <- filter (>p1) primes,
+                        isPrime $ conc (p1, p2),
+                        isPrime $ conc (p2, p1),
+                        p3 <- filter (>p2) primes,
+                        isPrime $ conc (p1, p3),
+                        isPrime $ conc (p3, p1),
+                        isPrime $ conc (p2, p3),
+                        isPrime $ conc (p3, p2),
+                        p4 <- filter (>p3) primes,
+                        isPrime $ conc (p1, p4),
+                        isPrime $ conc (p4, p1),
+                        isPrime $ conc (p2, p4),
+                        isPrime $ conc (p4, p2),
+                        isPrime $ conc (p3, p4),
+                        isPrime $ conc (p4, p3),
+                        p5 <- filter (>p4) primes,
+                        isPrime $ conc (p1, p5),
+                        isPrime $ conc (p5, p1),
+                        isPrime $ conc (p2, p5),
+                        isPrime $ conc (p5, p2),
+                        isPrime $ conc (p3, p5),
+                        isPrime $ conc (p5, p3),
+                        isPrime $ conc (p4, p5),
+                        isPrime $ conc (p5, p4),
+                        let ps = [p1, p2, p3, p4, p5]]
+  where
+    conc (i, j)  = readInt $ (show i) ++ (show j)
+    primes       = filter isPrime [2..10000]
+
+
 main = do
     input059 <- readFile "0059_cipher.txt"
 
@@ -75,5 +113,6 @@ main = do
     print $ "Problem 056: " ++ show (p056 99)
 
     print $ "Problem 059: " ++ show (p059 input059)
+    print $ "Problem 060: " ++ show p060
 
     print $ "---------- Done. ----------"
