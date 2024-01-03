@@ -49,6 +49,14 @@ p056 i = maximum [digitSum (a ^ b) | a <- [1..i],
     digitSum = sum . map digitToInt . show
 
 
+-- Straightforward. Using the Rational Integer type to avoid overflow.
+p057 = length . filter test . take 1000 . iterate f $ (3 % 2)
+  where
+    f :: Ratio Integer -> Ratio Integer
+    f x    = 1 + (1 / (x + 1))
+    test q = length (show (numerator q)) > length (show (denominator q))
+
+
 -- Direct search. Reasonably fast.
 p058 = (+2) 
      . fst
@@ -122,7 +130,7 @@ main = do
 
     print $ "Problem 055: " ++ show p055
     print $ "Problem 056: " ++ show (p056 99)
-
+    print $ "Problem 057: " ++ show p057
     print $ "Problem 058: " ++ show p058
     print $ "Problem 059: " ++ show (p059 input059)
     print $ "Problem 060: " ++ show p060
