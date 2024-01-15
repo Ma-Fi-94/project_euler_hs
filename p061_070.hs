@@ -1,9 +1,24 @@
 {-# LANGUAGE NumericUnderscores #-}
 
 import Data.Function (on)
-import Data.List (group, maximumBy, minimumBy, sort)
+import Data.List (elemIndex, group, maximumBy, minimumBy, sort)
+import Data.Maybe (fromJust)
 import Data.Ratio
 import Utils (primeFactors)
+
+
+-- We first enumerate all cubes n^3 for n <= 10_000. To check for
+-- permutations, we then sort the digits of all cubes, yielding
+-- cubes'. We sort this, group, and get the first element that's
+-- present exactly 5 times. Then we just have to look up the
+-- index of this element and raise it to the third power.
+-- Runs virtually instantly, since the search space is small.
+p062 = idx ^ 3
+  where
+    idx    = fromJust $ elemIndex first cubes'
+    first  = head . head . filter ((==5) . length) . group . sort $ cubes'
+    cubes' = map (sort . show) cubes 
+    cubes  = map (^3) [0..10_000]
 
 
 -- Using prime factorisation (by repeated trial division) for
@@ -38,8 +53,9 @@ p070 = fst
                   . primeFactors
 
 main = do
+    print $ "Problem 062: " ++ show (p062)
     --print $ "Problem 069: " ++ show (p069 1_000_000)
-    print $ "Problem 070: " ++ show (p070 10_000_000)
+    --print $ "Problem 070: " ++ show (p070 10_000_000)
 
 
     print $ "---------- Done. ----------"
