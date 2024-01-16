@@ -1,7 +1,8 @@
 {-# LANGUAGE NumericUnderscores #-}
 
+import Data.Char (digitToInt)
 import Data.Function (on)
-import Data.List (elemIndex, group, maximumBy, minimumBy, sort)
+import Data.List ((\\), elemIndex, group, maximumBy, minimumBy, sort)
 import Data.Maybe (fromJust)
 import Data.Ratio
 import Utils (primeFactors)
@@ -19,6 +20,15 @@ p062 = idx ^ 3
     first  = head . head . filter ((==5) . length) . group . sort $ cubes'
     cubes' = map (sort . show) cubes 
     cubes  = map (^3) [0..10_000]
+
+
+-- Straightforward direct calculation thanks to the Ratio type.
+p065 = sum . map digitToInt . show . numerator . build $ e'
+  where
+    build (x:[]) = (x % 1)
+    build (x:xs) = (x % 1) + (1 / (build xs))
+    e'           = reverse . take 100 $ e
+    e            = 2 : concat [[1, 2 * k, 1] | k <- [1..]]
 
 
 -- Using prime factorisation (by repeated trial division) for
@@ -53,7 +63,8 @@ p070 = fst
                   . primeFactors
 
 main = do
-    print $ "Problem 062: " ++ show (p062)
+    --print $ "Problem 062: " ++ show (p062)
+    print $ "Problem 065: " ++ show (p065)
     --print $ "Problem 069: " ++ show (p069 1_000_000)
     --print $ "Problem 070: " ++ show (p070 10_000_000)
 
