@@ -22,6 +22,22 @@ p062 = idx ^ 3
     cubes  = map (^3) [0..10_000]
 
 
+-- We want all n-digit numbers x, which are the n-th power of some
+-- positive number b. If there are no constraints on b, there exists no
+-- upper limit on n above which no solutions exist. Hence, I assumed
+-- the problem failed to mention that b must be a single-digit number,
+-- i.e. 1 <= b <= 9.
+-- First, we show there exists an N, s.t. for all n>N all n-th powers we
+-- can maximally reach (when b=9) have less than n digits. We have:
+-- 9^N < 10^(N-1), which can be directly solved to N ~ 21.854.
+-- Thus, we only need to search for n in 1..22. The rest is a simple
+-- enumeration of all n-th powers and filtering those with n digits.
+p063 = length [1 | b <- [1..9],
+                   n <- [1..22],
+                   b ^ n >= 10 ^ (n - 1),
+                   b ^ n <= 10 ^ n - 1]
+
+
 -- Straightforward direct calculation thanks to the Ratio type.
 p065 = sum . map digitToInt . show . numerator . build $ e'
   where
@@ -64,7 +80,8 @@ p070 = fst
 
 main = do
     --print $ "Problem 062: " ++ show (p062)
-    print $ "Problem 065: " ++ show (p065)
+    print $ "Problem 063: " ++ show (p063)
+    -- print $ "Problem 065: " ++ show (p065)
     --print $ "Problem 069: " ++ show (p069 1_000_000)
     --print $ "Problem 070: " ++ show (p070 10_000_000)
 
