@@ -1,5 +1,6 @@
 {-# LANGUAGE NumericUnderscores #-}
 
+import Data.Char (digitToInt)
 import Data.Fixed (mod')
 import Data.Function (on)
 import Data.List (maximumBy)
@@ -21,6 +22,21 @@ p091 n = length $ [1 | x1 <- [0..n],
                        let c2 = (y2 - y1) ^ 2 + (x2 - x1) ^ 2,
                        a2 + b2 == c2 || a2 + c2 == b2 || b2 + c2 == a2]
 
+
+-- A simple trick makes this performant: First, calculate the squareSum.
+-- This reduces the search space from 10M to 567. Then, we look up the
+-- terminal number and memoise all intermediate result for speed.
+p092 = length 
+     . filter (==89) 
+     . map (terminal . squareSum)
+     $ [1..9_999_999]
+  where
+    terminal 1  = 1
+    terminal 89 = 89
+    terminal i  = memo !! (squareSum i)
+    memo        = (-999) : map terminal [1..]
+    squareSum   = sum . map (^2) . map digitToInt . show
+    
 
 -- It is, what it is.
 p097 = (read :: String -> Int)
@@ -65,11 +81,11 @@ p100 nmin = go 1 1
 main = do
     input099 <- readFile "0099_base_exp.txt"
     --print $ "Problem 091: " ++ (show $ p091 50)
-
+    print $ "Problem 092: " ++ (show p092)
     --print $ "Problem 097: " ++ show p097
     --print $ "Problem 099: " ++ (show $ p099 input099)
 
 
-    print $ "Problem 100: " ++ (show $ p100 1_000_000_000_001)
+    -- print $ "Problem 100: " ++ (show $ p100 1_000_000_000_001)
 
     print $ "---------- Done. ----------"
