@@ -1,11 +1,18 @@
 {-# LANGUAGE NumericUnderscores #-}
 
+import Control.Arrow (second)
 import Data.Char (digitToInt)
 import Data.Fixed (mod')
 import Data.Function (on)
-import Data.List (maximumBy)
+import Data.List (group, groupBy, maximumBy, sortBy)
+import Data.Maybe (fromJust, isJust)
 import Data.Ratio
-import Utils (tok)
+import Utils (isPrime, primeFactors, tok)
+
+import Data.Set (Set)
+import qualified Data.Set as Set
+
+import Debug.Trace (trace)
 
 
 -- Slightly more optimised version of a previous, very naive approach.
@@ -36,7 +43,39 @@ p092 = length
     terminal i  = memo !! (squareSum i)
     memo        = (-999) : map terminal [1..]
     squareSum   = sum . map (^2) . map digitToInt . show
-    
+
+
+-- The key for performance lies in an efficient calculation of the
+-- sum of proper divisors, which is based on prime factorisations.
+-- Compiled for speed, this runs in ~6sec on my machine.
+p095 n = minimum
+       . map fst
+       . head
+       . groupBy (\(_, a) (_, b) -> a == b)
+       . reverse
+       . sortBy (compare `on` snd)
+       . map (second fromJust)
+       . filter (isJust . snd)
+       . zip [1..n] 
+       $ map maybeCycleLen [1..n]
+  where
+    maybeCycleLen k = go (Set.empty) 0 k
+      where
+        go seen ctr cur
+            | ctr > 0 && cur == k   = Just ctr
+            | isPrime cur           = Nothing -- shaves of ~ 1 o.o.m.
+            | cur > 1_000_000       = Nothing
+            | cur `Set.member` seen = Nothing
+            | otherwise             = go seen' (ctr + 1) cur'
+              where
+                seen'        = cur `Set.insert` seen
+                cur'         = sumPropDiv cur
+                sumPropDiv i = (+(-i))
+                             . product
+                             . map (\(p, e) -> sum [p ^ i | i <- [0..e]])
+                             . map (\l -> (head l, length l))
+                             . group
+                             $ primeFactors i
 
 -- It is, what it is.
 p097 = (read :: String -> Int)
@@ -79,9 +118,12 @@ p100 nmin = go 1 1
 
 
 main = do
-    input099 <- readFile "0099_base_exp.txt"
+    -- input099 <- readFile "0099_base_exp.txt"
+
     --print $ "Problem 091: " ++ (show $ p091 50)
-    print $ "Problem 092: " ++ (show p092)
+    --print $ "Problem 092: " ++ (show p092)
+    print $ "Problem 095: " ++ (show $ p095 1_000_000)
+    --print $ sumPropDiv 96
     --print $ "Problem 097: " ++ show p097
     --print $ "Problem 099: " ++ (show $ p099 input099)
 
