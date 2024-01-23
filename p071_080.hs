@@ -1,12 +1,12 @@
 {-# LANGUAGE NumericUnderscores #-}
 
 import Data.Char (digitToInt)
-import Data.List (group, nub, sort)
+import Data.List (group, nub, sort, isSubsequenceOf, permutations)
 import Data.Maybe (fromJust)
 import Data.Ratio
 import Data.Set (Set)
 import qualified Data.Set as Set
-import Utils (primeFactors)
+import Utils (primeFactors, readInt)
 
 -- Binary search on the Stern-Brocot tree. Runs virtually instantly.
 p071 x dmax = go (0 % 1) (1 % 1)
@@ -74,12 +74,29 @@ p075 l = length
                                      a + b + c <= l]
     isqrt             = truncate . sqrt . fromIntegral
 
+
+-- First, observe only the digits 01236789 occur. We assume that every digit
+-- only occurs once, because we want to find the shortest possible solution.
+-- Thus, we only need to generate all permutations of these digits and check
+-- which permutations fulfil all constraints, and take the first one.
+-- This runs basically instantly despite being a naive approach.
+p079 constraints = readInt
+                 . head
+                 . filter validate
+                 $ permutations digits
+  where
+    digits     = "01236789"
+    validate x = all (`isSubsequenceOf` x) constraints
+
+
 main = do
+    input_p079 <- readFile "0079_keylog.txt"
+
     -- print $ "Problem 071: " ++ show (p071 (3 % 7) 1_000_000)
     -- print $ "Problem 072: " ++ show (p072 1_000_000)
     
     -- print $ "Problem 074: " ++ show p074
-    print $ "Problem 075: " ++ show (p075 1_500_000)
-
+    -- print $ "Problem 075: " ++ show (p075 1_500_000)
+    print $ "Problem 079: " ++ show (p079 (lines input_p079))
 
     print $ "---------- Done. ----------"
